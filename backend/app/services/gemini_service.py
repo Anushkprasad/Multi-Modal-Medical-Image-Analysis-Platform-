@@ -10,10 +10,16 @@ Key safety constraints enforced in the prompt:
   - Gemini is NOT independently diagnosing the patient.
   - Output MUST follow the RadiologyReport JSON schema exactly.
 
-Environment variables (set in .env or shell):
+Environment variables (set in backend/.env or shell):
     GEMINI_API_KEY   Google AI Studio / Vertex API key (required in production).
     GEMINI_MODEL     Model name — default: gemini-2.0-flash
     GEMINI_MOCK      Set to "true" to skip real API calls (no key needed).
+
+NOTE ON ENV VAR TIMING:
+    These variables are read INSIDE generate_report() at call time, NOT at
+    module import time. This is intentional: it ensures load_dotenv() in
+    main.py has already run before the values are read, and makes the service
+    testable by setting os.environ before calling generate_report().
 
 Usage:
     from app.services.gemini_service import generate_report
@@ -25,11 +31,6 @@ import os
 from typing import Optional
 
 from app.schemas.prediction import RadiologyReport
-
-# ── Read config from environment ────────────────────────────────
-GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
-GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
-GEMINI_MOCK: bool = os.getenv("GEMINI_MOCK", "false").strip().lower() == "true"
 
 
 # ── Prompt template ─────────────────────────────────────────────
@@ -109,6 +110,10 @@ def generate_report(
     """
     Generate a structured radiology report by summarising model outputs.
 
+    Env vars are read HERE (at call time) rather than at module import time.
+    This guarantees that load_dotenv() in main.py has already executed and
+    that test code can set os.environ before calling this function.
+
     If GEMINI_MOCK=true, returns a mock report without any API call.
     Otherwise, calls the Gemini API with a structured-output configuration
     so the response is parsed directly into the RadiologyReport schema.
@@ -126,10 +131,16 @@ def generate_report(
         ValueError: If GEMINI_MOCK=false and GEMINI_API_KEY is not set.
         Exception:  Propagates any google-genai API errors.
     """
-    if GEMINI_MOCK:
+    # Read env vars at call time — not at import time — so .env loading
+    # in main.py always takes effect before these are evaluated.
+    gemini_mock: bool = os.getenv("GEMINI_MOCK", "false").strip().lower() == "true"
+    gemini_api_key: str = os.getenv("GEMINI_API_KEY", "")
+    gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+
+    if gemini_mock:
         return _mock_report()
 
-    if not GEMINI_API_KEY:
+    if not gemini_api_key:
         raise ValueError(
             "GEMINI_API_KEY environment variable is not set. "
             "Either set a valid key or use GEMINI_MOCK=true for local testing."
@@ -140,12 +151,12 @@ def generate_report(
     from google import genai
     from google.genai import types
 
-    client = genai.Client(api_key=GEMINI_API_KEY)
+    client = genai.Client(api_key=gemini_api_key)
 
     prompt = _build_prompt(yolo_result, densenet_result, multimodal_result, clinical_notes)
 
     response = client.models.generate_content(
-        model=GEMINI_MODEL,
+        model=gemini_model,
         contents=prompt,
         config=types.GenerateContentConfig(
             response_mime_type="application/json",

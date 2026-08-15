@@ -6,8 +6,20 @@ Run from the backend/ directory:
 
 Swagger UI available at:
     http://localhost:8000/docs
+
+Environment variables are loaded from backend/.env (if present) before
+any other module is imported, so settings like GEMINI_MOCK and DATABASE_URL
+are available to all services at startup.
 """
 
+# ── Load .env FIRST, before any other app imports ───────────────
+# This ensures GEMINI_MOCK, GEMINI_API_KEY, DATABASE_URL, etc. are in
+# os.environ before gemini_service.py or database.py read them.
+from dotenv import load_dotenv
+
+load_dotenv()  # reads backend/.env if it exists; safe no-op if it doesn't
+
+# ── Now import the rest of the app ──────────────────────────────
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI

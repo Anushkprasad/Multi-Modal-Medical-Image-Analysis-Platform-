@@ -224,3 +224,93 @@ class TestAuditEndpoint:
         fake_id = "nonexistent-id"
         resp = client.get(f"/api/v1/audit/{fake_id}")
         assert fake_id in resp.json()["detail"]
+
+
+# ════════════════════════════════════════════════════════════════
+# 8. Regression: live HTTP 500 caused by GEMINI_MOCK frozen at import time
+# ════════════════════════════════════════════════════════════════
+class TestRegressionHttp500:
+    """
+    Regression tests for the bug where POST /api/v1/predict returned HTTP 500
+    in the live Uvicorn server but passed all automated tests.
+
+    Root cause: gemini_service.py read GEMINI_MOCK at module import time
+    (module-level: GEMINI_MOCK = os.getenv(...)), so it was always False
+    when uvicorn loaded the module before load_dotenv() had run.
+
+    Fix:
+      1. main.py now calls load_dotenv() before importing any app modules.
+      2. gemini_service.generate_report() now reads os.getenv("GEMINI_MOCK")
+         at call time, not at import time.
+    """
+
+    def test_predict_succeeds_with_mock_mode(self, client):
+        """
+        Core regression: full prediction pipeline must return 200 (not 500)
+        when GEMINI_MOCK=true is in the environment.
+        conftest.py sets this before the app is imported.
+        """
+        png = _make_tiny_png()
+        resp = client.post(
+            "/api/v1/predict",
+            files={"image": ("chest_xray.png", io.BytesIO(png), "image/png")},
+            data={"clinical_notes": "Patient presents with cough and fever for 3 days."},
+        )
+        assert resp.status_code == 200, (
+            f"Expected 200 but got {resp.status_code}. "
+            f"Body: {resp.text}"
+        )
+
+    def test_generate_report_reads_env_at_call_time(self):
+        """
+        Directly verify that generate_report() reads GEMINI_MOCK at call time.
+        This is the specific fix for the import-time freeze bug.
+        Even if the module was imported without the env var, setting it
+        before the call must make the mock path activate.
+        """
+        import os
+        from app.services.gemini_service import generate_report
+
+        original = os.environ.get("GEMINI_MOCK")
+        try:
+            os.environ["GEMINI_MOCK"] = "true"
+            report = generate_report({}, {}, {}, None)
+            assert report.impression.startswith("[MOCK]"), (
+                "Expected mock report but got real report path"
+            )
+        finally:
+            if original is None:
+                os.environ.pop("GEMINI_MOCK", None)
+            else:
+                os.environ["GEMINI_MOCK"] = original
+
+    def test_predict_response_is_complete(self, client):
+        """
+        Verify all required fields are present in the prediction response
+        — the exact fields the live Swagger request was checking.
+        """
+        png = _make_tiny_png()
+        resp = client.post(
+            "/api/v1/predict",
+            files={"image": ("chest_xray.png", io.BytesIO(png), "image/png")},
+            data={"clinical_notes": "Mild shortness of breath reported."},
+        )
+        data = resp.json()
+        for field in ["request_id", "filename", "yolo_result",
+                      "densenet_result", "multimodal_result", "gemini_report"]:
+            assert field in data, f"Missing field in response: {field}"
+
+    def test_audit_retrievable_after_live_predict(self, client):
+        """
+        After the fix, audit retrieval via request_id must also work end-to-end.
+        """
+        png = _make_tiny_png()
+        pred = client.post(
+            "/api/v1/predict",
+            files={"image": ("chest_xray.png", io.BytesIO(png), "image/png")},
+        )
+        request_id = pred.json()["request_id"]
+        audit = client.get(f"/api/v1/audit/{request_id}")
+        assert audit.status_code == 200
+        assert audit.json()["request_id"] == request_id
+
