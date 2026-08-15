@@ -22,3 +22,14 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# ── Python / Backend ─────────────────────────────────────────
+# Real .env files with secrets — .env.example IS tracked
+.env
+
+# Compiled Python files
+__pycache__/
+*.py[cod]
+
+# Local SQLite databases (dev/test only, not for production)
+*.db
