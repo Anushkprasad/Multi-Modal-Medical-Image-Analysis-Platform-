@@ -2,7 +2,7 @@ import "./UploadForm.css";
 import { useState } from "react";
 function UploadForm() {
   const [image, setImage] = useState(null);
-  const [description, setDescription] = useState("");
+  const [clinicalInfo, setClinicalInfo] = useState("");
   const handleAnalyze = () => {
     alert("Backend is not connected yet.");
   };
@@ -26,8 +26,8 @@ function UploadForm() {
 
         <textarea
           className="description-input"
-          placeholder="Enter Description"
-          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Enter Clinical Information"
+          onChange={(e) => setClinicalInfo(e.target.value)}
         ></textarea>
 
         <button className="analyze-button" onClick={handleAnalyze}>

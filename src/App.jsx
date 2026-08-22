@@ -1,12 +1,17 @@
-import UploadForm from "./components/UploadForm"
-import Navbar from "./components/Navbar"
+import { BrowserRouter, Routes, Route} from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import Upload from "./pages/Upload";
 function App() {
-  return (
-    <>
-    <Navbar />
-    <UploadForm />
-    </>
-    
+  return( 
+    <BrowserRouter>
+  <Navbar />
+  
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/upload" element={<Upload />} />
+      </Routes>
+      </BrowserRouter>
   );
 }
 
