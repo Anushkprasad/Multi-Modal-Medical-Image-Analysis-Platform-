@@ -1,0 +1,6 @@
+venv/
+__pycache__/
+*.pyc
+data/nih_chestxray14/images/
+data/nih_chestxray14/sample/images/
+data/nih_chestxray14/sample/sample/images/
