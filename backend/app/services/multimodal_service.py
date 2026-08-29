@@ -8,6 +8,7 @@ from typing import Any, Optional
 
 import torch
 from PIL import Image
+from torch import nn
 from transformers import AutoModel, AutoTokenizer
 
 
@@ -18,6 +19,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from data.dataset import PATHOLOGY_CLASSES, default_image_transform
 from data.image_feature_interface import IdentityImageFeatureExtractor
 from models.fusion import MultiModalFusion
+from models.gradcam import GradCAM, encode_heatmap_png_base64, find_last_conv_layer
 
 
 DEFAULT_CLINICALBERT_MODEL = "emilyalsentzer/Bio_ClinicalBERT"
@@ -190,6 +192,54 @@ def _encode_clinical_notes(clinical_notes: Optional[str], components: dict[str, 
     return outputs.last_hidden_state[:, 0, :]
 
 
+class _ImageOnlyMultimodalWrapper(nn.Module):
+    def __init__(
+        self,
+        image_extractor: nn.Module,
+        fusion_model: MultiModalFusion,
+        text_features: torch.Tensor,
+    ) -> None:
+        super().__init__()
+        self.image_extractor = image_extractor
+        self.fusion_model = fusion_model
+        self.text_features = text_features
+
+    def forward(self, image_tensor: torch.Tensor) -> torch.Tensor:
+        image_features = self.image_extractor(image_tensor)
+        text_features = self.text_features.expand(image_tensor.shape[0], -1)
+        return self.fusion_model(image_features, text_features)
+
+
+def _compute_grad_cam(
+    image_tensor: torch.Tensor,
+    text_features: torch.Tensor,
+    target_class: int,
+    components: dict[str, Any],
+) -> tuple[Optional[str], str]:
+    image_extractor = components["image_extractor"]
+    if not isinstance(image_extractor, nn.Module):
+        return None, "unavailable: image extractor is not a torch.nn.Module"
+
+    target_layer = find_last_conv_layer(image_extractor)
+    if target_layer is None:
+        return None, "unavailable: image extractor has no Conv2d layer for Grad-CAM"
+
+    wrapper = _ImageOnlyMultimodalWrapper(
+        image_extractor=image_extractor,
+        fusion_model=components["fusion_model"],
+        text_features=text_features.detach(),
+    ).to(components["device"])
+    wrapper.eval()
+
+    grad_cam = GradCAM(wrapper, target_layer)
+    try:
+        with torch.enable_grad():
+            heatmap = grad_cam(image_tensor.detach().requires_grad_(True), target_class=target_class)
+        return encode_heatmap_png_base64(heatmap[0]), "ok"
+    finally:
+        grad_cam.close()
+
+
 def call_multimodal(image_bytes: bytes, clinical_notes: Optional[str]) -> dict:
     try:
         components = _load_components()
@@ -205,13 +255,22 @@ def call_multimodal(image_bytes: bytes, clinical_notes: Optional[str]) -> dict:
             text_features = _encode_clinical_notes(clinical_notes, components)
             logits = components["fusion_model"](image_features, text_features)
             probabilities = torch.sigmoid(logits).squeeze(0).detach().cpu().tolist()
+            target_class = int(torch.argmax(logits, dim=1).item())
+
+        grad_cam, grad_cam_status = _compute_grad_cam(
+            image_tensor=image_tensor,
+            text_features=text_features,
+            target_class=target_class,
+            components=components,
+        )
 
         return {
             "pathology_probabilities": {
                 class_name: float(probability)
                 for class_name, probability in zip(PATHOLOGY_CLASSES, probabilities)
             },
-            "grad_cam": None,
+            "grad_cam": grad_cam,
+            "grad_cam_status": grad_cam_status,
             "status": "ok",
             "warning": "Research output only. This model has not been clinically validated for medical diagnosis.",
         }
@@ -219,6 +278,7 @@ def call_multimodal(image_bytes: bytes, clinical_notes: Optional[str]) -> dict:
         return {
             "pathology_probabilities": _empty_probabilities(),
             "grad_cam": None,
+            "grad_cam_status": "not_computed",
             "status": "model_unavailable",
             "error": str(exc),
             "warning": "No medical prediction was produced.",
