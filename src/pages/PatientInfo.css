@@ -1,0 +1,182 @@
+.patient-page {
+  min-height: calc(100vh - 70px);
+  padding: 45px 20px;
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  color: white;
+}
+
+.patient-card {
+  width: 100%;
+  max-width: 900px;
+  padding: 40px;
+  border: 1px solid rgba(0, 180, 216, 0.25);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(14px);
+  box-sizing: border-box;
+}
+
+.patient-header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.patient-badge {
+  display: inline-block;
+  padding: 7px 15px;
+  border: 1px solid rgba(0, 180, 216, 0.4);
+  border-radius: 50px;
+  background: rgba(0, 180, 216, 0.08);
+  color: #00b4d8;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.patient-header h1 {
+  margin: 18px 0 10px;
+  font-size: 38px;
+}
+
+.patient-header p {
+  max-width: 650px;
+  margin: 0 auto;
+  color: #cbd5e1;
+  line-height: 1.6;
+  font-size: 16px;
+}
+
+.patient-form {
+  width: 100%;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 22px;
+  margin-bottom: 22px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  color: #e2e8f0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px 15px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  border-radius: 10px;
+  outline: none;
+  background: rgba(15, 23, 42, 0.65);
+  color: white;
+  font-size: 15px;
+  font-family: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #94a3b8;
+}
+
+.form-group select {
+  cursor: pointer;
+}
+
+.form-group select option {
+  background: #0f172a;
+  color: white;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  border-color: #00b4d8;
+  box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 140px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.back-button,
+.continue-button {
+  border: none;
+  border-radius: 10px;
+  padding: 13px 22px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.back-button {
+  background: rgba(255, 255, 255, 0.08);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.continue-button {
+  background: linear-gradient(135deg, #00b4d8, #0077b6);
+  color: white;
+}
+
+.back-button:hover,
+.continue-button:hover {
+  transform: translateY(-2px);
+}
+
+.continue-button:hover {
+  box-shadow: 0 8px 20px rgba(0, 180, 216, 0.3);
+}
+
+@media (max-width: 700px) {
+  .patient-page {
+    padding: 30px 15px;
+  }
+
+  .patient-card {
+    padding: 25px 20px;
+  }
+
+  .patient-header h1 {
+    font-size: 30px;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .back-button,
+  .continue-button {
+    width: 100%;
+  }
+}

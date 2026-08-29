@@ -1,0 +1,485 @@
+.dashboard-page {
+  padding: 30px;
+  max-width: 1300px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  color: var(--text-primary);
+}
+
+.dashboard-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.back-btn {
+  background: var(--card-bg, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--card-border, rgba(255, 255, 255, 0.15));
+  color: var(--text-secondary, #cbd5e1);
+  padding: 10px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.action-btn {
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.action-btn.primary {
+  background: linear-gradient(135deg, var(--accent, #00b4d8), var(--accent-dark, #0077b6));
+  color: white;
+}
+
+.action-btn.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(0, 180, 216, 0.35);
+}
+
+.action-btn.secondary {
+  background: var(--card-bg, rgba(255, 255, 255, 0.08));
+  border: 1px solid var(--card-border, rgba(255, 255, 255, 0.2));
+  color: var(--text-primary, white);
+}
+
+.action-btn.secondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 420px 1fr;
+  gap: 25px;
+  margin-bottom: 25px;
+}
+
+.dashboard-col-left,
+.dashboard-col-right {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.info-card {
+  background: var(--card-bg, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--card-border, rgba(0, 180, 216, 0.25));
+  border-radius: 18px;
+  padding: 24px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--accent, #00b4d8);
+  margin: 0 0 18px 0;
+  border-left: 3px solid var(--accent, #00b4d8);
+  padding-left: 10px;
+}
+
+.patient-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.meta-item {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 8px;
+}
+
+.meta-item .label {
+  color: var(--text-muted, #94a3b8);
+  font-size: 13px;
+}
+
+.meta-item .value {
+  font-weight: 600;
+  color: var(--text-primary, white);
+  max-width: 60%;
+}
+
+.clinical-history-section {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 15px;
+}
+
+.clinical-history-section .label {
+  color: var(--text-muted, #94a3b8);
+  font-size: 13px;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.clinical-text {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary, #cbd5e1);
+  margin: 0;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.chart-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-workspace-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.workspace-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.workspace-header .card-title {
+  margin-bottom: 0;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.control-tab {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-secondary, #cbd5e1);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.control-tab:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.control-tab.active {
+  background: rgba(0, 180, 216, 0.18);
+  border-color: var(--accent, #00b4d8);
+  color: var(--accent, #00b4d8);
+}
+
+.slider-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--text-muted, #94a3b8);
+  margin-left: 8px;
+}
+
+.slider-control input[type="range"] {
+  width: 80px;
+  height: 4px;
+  accent-color: var(--accent, #00b4d8);
+  cursor: pointer;
+}
+
+.workspace-body {
+  display: flex;
+  justify-content: center;
+  background: #000;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.slider-wrapper {
+  width: 100%;
+  position: relative;
+}
+
+.slider-item {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.slider-badge {
+  position: absolute;
+  top: 12px;
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: white;
+  text-transform: uppercase;
+  z-index: 10;
+  letter-spacing: 0.5px;
+}
+
+.slider-badge.left {
+  left: 12px;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+.slider-badge.right {
+  right: 12px;
+  background: rgba(0, 180, 216, 0.85);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+.detection-box {
+  position: absolute;
+  border: 2px solid #ef4444;
+  background: rgba(239, 68, 68, 0.08);
+  border-radius: 4px;
+  z-index: 5;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+}
+
+.detection-label {
+  position: absolute;
+  top: -20px;
+  left: -2px;
+  background: #ef4444;
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 3px 3px 0 0;
+  white-space: nowrap;
+}
+
+.heatmap-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 35% 45%, rgba(239, 68, 68, 1) 0%, rgba(245, 158, 11, 0.8) 25%, rgba(34, 197, 94, 0.4) 50%, rgba(0, 0, 0, 0) 75%),
+              radial-gradient(circle at 65% 55%, rgba(239, 68, 68, 0.6) 0%, rgba(245, 158, 11, 0.5) 20%, rgba(0, 0, 0, 0) 60%);
+  pointer-events: none;
+  z-index: 4;
+  mix-blend-mode: color-dodge;
+  transition: opacity 0.3s ease;
+}
+
+.similarity-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+}
+
+.similar-case-item {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+.similar-case-item.demo {
+  border-style: dashed;
+  opacity: 0.9;
+}
+
+.case-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.case-id {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+}
+
+.case-similarity {
+  font-size: 10px;
+  color: var(--success, #22c55e);
+  font-weight: 600;
+}
+
+.case-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.case-label {
+  font-size: 9px;
+  color: var(--text-muted);
+}
+
+.case-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.case-value.alert {
+  color: var(--danger, #ef4444);
+}
+
+.radiology-report-section {
+  background: var(--card-bg, rgba(255, 255, 255, 0.05));
+  border: 1px solid var(--card-border, rgba(0, 180, 216, 0.25));
+  border-radius: 18px;
+  padding: 30px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-sizing: border-box;
+}
+
+.report-heading {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary, white);
+  margin: 0 0 10px 0;
+}
+
+.report-warning {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--warning, #f59e0b);
+  background: rgba(245, 158, 11, 0.06);
+  border: 1px solid rgba(245, 158, 11, 0.15);
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+}
+
+.report-content-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 25px;
+}
+
+.report-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.report-section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent, #00b4d8);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.report-text {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary, #cbd5e1);
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.dashboard-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 120px);
+  font-size: 18px;
+  color: var(--text-secondary);
+}
+
+.truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Printing styles */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .dashboard-page {
+    padding: 0 !important;
+    max-width: 100% !important;
+    color: black !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .info-card, .radiology-report-section {
+    background: transparent !important;
+    border: 1px solid #ccc !important;
+    box-shadow: none !important;
+    color: black !important;
+  }
+
+  .card-title {
+    color: black !important;
+    border-left-color: #333 !important;
+  }
+
+  .meta-item .value, .clinical-text, .report-text {
+    color: black !important;
+  }
+
+  .clinical-text {
+    background: #f5f5f5 !important;
+    border-color: #ddd !important;
+  }
+
+  .report-section-title {
+    color: black !important;
+  }
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-page {
+    padding: 15px;
+  }
+  .similarity-grid {
+    grid-template-columns: 1fr;
+  }
+  .report-content-grid {
+    grid-template-columns: 1fr;
+  }
+}
