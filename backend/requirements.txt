@@ -1,0 +1,32 @@
+# ─────────────────────────────────────────────────────────────────
+# Backend dependencies — Multi-Modal Medical Image Analysis Platform
+# ─────────────────────────────────────────────────────────────────
+# Install with:
+#   pip install -r requirements.txt
+# ─────────────────────────────────────────────────────────────────
+
+# ── Web framework ────────────────────────────────────────────────
+fastapi>=0.100.0
+uvicorn[standard]>=0.20.0
+
+# ── Form / file upload support for FastAPI ───────────────────────
+python-multipart>=0.0.5
+
+# ── Google Gemini SDK (official, not deprecated google-generativeai)
+google-genai>=1.0.0
+
+# ── Data validation ──────────────────────────────────────────────
+pydantic>=2.0.0
+
+# ── Database ─────────────────────────────────────────────────────
+sqlalchemy>=2.0.0
+
+# ── PostgreSQL driver (production; not needed for SQLite local dev)
+psycopg[binary]>=3.1.0
+
+# ── Environment variable loading ─────────────────────────────────
+python-dotenv>=1.0.0
+
+# ── Testing ──────────────────────────────────────────────────────
+pytest>=7.0.0
+httpx>=0.23.0        # required by FastAPI TestClient
